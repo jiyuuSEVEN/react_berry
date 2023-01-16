@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const authSlice = createSlice({
     name: 'auth',
@@ -6,14 +6,14 @@ const authSlice = createSlice({
         id: null,
         username: null,
         email: null,
-        token:{
+        token: {
             is_refresh_token: false,
             access_token: null,
-            refresh_token: null,
+            refresh_token: null
         }
     },
     reducers: {
-        logIn: (state, action) =>  {
+        logIn: (state, action) => {
             const { id, username, email, access_token, refresh_token } = action.payload;
             state.id = id;
             state.username = username;
@@ -41,18 +41,17 @@ const authSlice = createSlice({
             state.email = null;
             state.token.access_token = null;
             state.token.refresh_token = null;
-
         }
-    },
+    }
 });
 
 export const { logIn, logOut, changeTokens, isRefreshToken } = authSlice.actions;
 
 export default authSlice.reducer;
 
-export const selectCurrentUserId  = (state) => state.auth.id;
-export const selectCurrentUserName  = (state) => state.auth.username;
-export const selectCurrentUserEmail  = (state) => state.auth.email;
-export const selectCurrentUserAccessToken  = (state) => state.auth.token.access_token;
-export const selectCurrentUserRefreshToken  = (state) => state.auth.token.refresh_token;
-export const selectCurrentTokenInHeaders  = (state) => state.auth.token.token_in_headers;
+export const selectCurrentUserId = (state) => state.auth.id;
+export const selectCurrentUserName = (state) => state.auth.username;
+export const selectCurrentUserEmail = (state) => state.auth.email;
+export const selectCurrentUserAccessToken = (state) => state.auth.token.access_token;
+export const selectCurrentUserRefreshToken = (state) => state.auth.token.refresh_token;
+export const selectCurrentTokenInHeaders = (state) => state.auth.token.token_in_headers;
