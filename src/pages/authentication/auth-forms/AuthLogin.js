@@ -47,23 +47,30 @@ const AuthLogin = () => {
         event.preventDefault();
     };
 
-    const [login, { isLoginLoading }] = useLoginMutation();
+    const [login] = useLoginMutation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const onLoginSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-            debugger;
             setStatus({ success: true });
             setSubmitting(true);
             let email = values.email;
             let password = values.password;
-            const userData = login({ email, password })
+            login({ email, password })
                 .unwrap()
                 .then((value) => {
-                    console.log(value);
                     dispatch(logIn({ ...value.user }));
                     navigate('/', { replace: true });
+                })
+                .catch((value) => {
+                    if (value.status === 404) {
+                        setErrors({ submit: 'Invalid email or password' });
+                    } else {
+                        setErrors({ submit: 'Sorry! Somthing went wrong.' });
+                    }
+                    setStatus({ success: false });
+                    setSubmitting(false);
                 });
         } catch (err) {
             setStatus({ success: false });

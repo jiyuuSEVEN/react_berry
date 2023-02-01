@@ -7,6 +7,6 @@ import { apiSlice } from './api/api';
 import auth from './auth';
 
 // ==============================|| COMBINE REDUCERS ||============================== //
-const reducers = combineReducers({ menu, auth, apiSlice });
+const reducers = combineReducers({ menu, auth, [apiSlice.reducerPath]: apiSlice.reducer });
 
 export default reducers;
