@@ -1,9 +1,6 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-
 import { useDispatch } from 'react-redux';
-import { useLoginMutation } from '../../../store/reducers/api/auth.api';
-import { logIn } from '../../../store/reducers/auth';
 
 // material-ui
 import {
@@ -29,6 +26,8 @@ import { Formik } from 'formik';
 // project import
 import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
+import { useLoginMutation, useSendOTPMutation } from '../../../store/reducers/api/auth.api';
+import { logIn, emailVerification } from '../../../store/reducers/auth';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
@@ -48,6 +47,7 @@ const AuthLogin = () => {
     };
 
     const [login] = useLoginMutation();
+    const [sendOTP] = useSendOTPMutation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -57,6 +57,8 @@ const AuthLogin = () => {
             setSubmitting(true);
             let email = values.email;
             let password = values.password;
+
+            // api call
             login({ email, password })
                 .unwrap()
                 .then((value) => {
@@ -64,10 +66,26 @@ const AuthLogin = () => {
                     navigate('/', { replace: true });
                 })
                 .catch((value) => {
-                    if (value.status === 404) {
+                    if (value.status === 401) {
+                        dispatch(emailVerification({ email }));
+
+                        // api call
+                        sendOTP({ email })
+                            .unwrap()
+                            .then(() => {
+                                navigate('/verify-user', { replace: true });
+                            })
+                            .catch((value) => {
+                                if (value.status === 404) {
+                                    setErrors({ submit: 'User not registered' });
+                                }
+                                setStatus({ success: false });
+                                setSubmitting(false);
+                            });
+                    } else if (value.status === 404) {
                         setErrors({ submit: 'Invalid email or password' });
                     } else {
-                        setErrors({ submit: 'Sorry! Somthing went wrong.' });
+                        setErrors({ submit: 'Sorry! Somthing went wrong' });
                     }
                     setStatus({ success: false });
                     setSubmitting(false);

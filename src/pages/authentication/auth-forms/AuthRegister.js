@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 // material-ui
 import {
@@ -26,6 +27,8 @@ import { Formik } from 'formik';
 import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
+import { emailVerification } from '../../../store/reducers/auth';
+import { useRegisterMutation, useSendOTPMutation } from '../../../store/reducers/api/auth.api';
 
 // assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
@@ -48,11 +51,49 @@ const AuthRegister = () => {
         setLevel(strengthColor(temp));
     };
 
+    const [register] = useRegisterMutation();
+    const [sendOTP] = useSendOTPMutation();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const onRegisterSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
         try {
-            setStatus({ success: false });
-            setSubmitting(false);
-            console.log(values);
+            setStatus({ success: true });
+            setSubmitting(true);
+            let username = values.username;
+            let email = values.email;
+            let password = values.password;
+
+            // api call
+            register({ username, email, password })
+                .unwrap()
+                .then((value) => {
+                    console.log(value);
+                    dispatch(emailVerification({ email }));
+
+                    // api call
+                    sendOTP({ email })
+                        .unwrap()
+                        .then(() => {
+                            navigate('/verify-user', { replace: true });
+                        })
+                        .catch((value) => {
+                            if (value.status === 404) {
+                                setErrors({ submit: 'Sorry! Somthing went wrong' });
+                            }
+                            setStatus({ success: false });
+                            setSubmitting(false);
+                        });
+                })
+                .catch((value) => {
+                    if (value.status === 409) {
+                        setErrors({ submit: 'Username or Email already exist.' });
+                    } else {
+                        setErrors({ submit: 'Sorry! Somthing went wrong.' });
+                    }
+                    setStatus({ success: false });
+                    setSubmitting(false);
+                });
         } catch (err) {
             console.error(err);
             setStatus({ success: false });

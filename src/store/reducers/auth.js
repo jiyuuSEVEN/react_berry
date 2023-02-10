@@ -41,11 +41,16 @@ const authSlice = createSlice({
             state.email = null;
             state.token.access_token = null;
             state.token.refresh_token = null;
+        },
+
+        emailVerification: (state, action) => {
+            const { email } = action.payload;
+            state.email = email;
         }
     }
 });
 
-export const { logIn, logOut, changeTokens, isRefreshToken } = authSlice.actions;
+export const { logIn, logOut, changeTokens, isRefreshToken, emailVerification } = authSlice.actions;
 
 export default authSlice.reducer;
 
