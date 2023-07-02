@@ -23,10 +23,10 @@ const dashboard = {
             breadcrumbs: false
         },
         {
-            id: 'web-page',
+            id: 'sample-page',
             title: 'WebPage',
             type: 'item',
-            url: '/web-page',
+            url: '/sample-page',
             icon: icons.FileOutlined,
             breadcrumbs: false
         }
