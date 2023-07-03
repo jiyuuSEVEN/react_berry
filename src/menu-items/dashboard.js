@@ -24,7 +24,7 @@ const dashboard = {
         },
         {
             id: 'sample-page',
-            title: 'WebPage',
+            title: 'Sample Page',
             type: 'item',
             url: '/sample-page',
             icon: icons.FileOutlined,
